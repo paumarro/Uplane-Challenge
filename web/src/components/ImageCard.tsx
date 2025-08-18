@@ -1,37 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react'
+import { CrossIcon, DownloadIcon } from '../assets/Icons'
 
-type Props = {
-  item: { id: string; status: string; processedUrl?: string | null };
-  onDelete: (id: string) => void;
-};
+export function ImageCard({ item, onDelete }: { item: Item; onDelete: () => void }) {
+  const [hover, setHover] = useState(false)
+  const isReady = !!item.processedUrl && item.status === 'DONE'
 
-export default function ImageCard({ item, onDelete }: Props) {
   return (
-    <div className="bg-white rounded shadow p-4 flex items-center justify-between">
-      <div>
-        <div className="font-mono text-sm">{item.id}</div>
-        <div className="text-xs text-gray-500">{item.status}</div>
-        {item.processedUrl && (
-          <div className="mt-2">
-            <a className="text-blue-600 underline" href={item.processedUrl} target="_blank" rel="noreferrer">
-              Open processed image
-            </a>
-          </div>
-        )}
-      </div>
-      <div className="flex items-center gap-2">
-        {item.processedUrl && (
-          <button
-            className="px-3 py-1 text-sm bg-gray-100 rounded"
-            onClick={() => navigator.clipboard.writeText(item.processedUrl!)}
-          >
-            Copy URL
-          </button>
-        )}
-        <button className="px-3 py-1 text-sm bg-red-600 text-white rounded" onClick={() => onDelete(item.id)}>
-          Delete
-        </button>
-      </div>
+    <div
+      className="relative shrink-0 w-48 h-48 rounded-2xl overflow-hidden bg-white border border-black/5 shadow-sm"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {/* Delete button (top-right) */}
+      <button
+        onClick={onDelete}
+        title="Delete image"
+        className="absolute right-2 top-2 z-10 h-7 w-7 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-black transition"
+      >
+        <CrossIcon className="h-4 w-4" />
+      </button>
+
+      {/* Image or placeholder */}
+      {isReady ? (
+        <img
+          src={item.processedUrl!}
+          alt="Processed"
+          className="h-full w-full object-cover"
+          draggable={false}
+        />
+      ) : (
+        <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-sm">
+          {item.status === 'ERROR' ? 'Error' : 'Processing...'}
+        </div>
+      )}
+
+      {/* Hover download overlay */}
+      {hover && isReady && (
+        <a
+          href={item.processedUrl!}
+          download
+          className="absolute inset-0 bg-black/30 flex items-center justify-center"
+          title="Download"
+        >
+          <DownloadIcon className="h-10 w-10 text-white" />
+        </a>
+      )}
     </div>
-  );
+  )
 }

@@ -4,6 +4,7 @@ import DragAndDropUploader from './components/DragAndDropUploader';
 import ImageList from './components/ImageList';
 import ErrorBanner from './components/ErrorBanner';
 import NavBar from './components/NavBar';
+import { YourImagesRow } from './components/ImagesRow';
 
 type Item = { id: string; status: 'QUEUED' | 'PROCESSING' | 'DONE' | 'ERROR'; processedUrl?: string | null; createdAt?: string };
 
@@ -45,17 +46,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-[#EBF5FF] text-gray-900">
       <NavBar />
-      <div className="max-w-3xl mx-auto py-10 px-4">
-        <h1 className="text-2xl font-bold mb-4">Image Processor</h1>
-        <p className="mb-6 text-sm text-gray-600">
-          Upload an image. The backend removes the background and flips it horizontally. You get a unique URL for the processed image and can delete it later.
-        </p>
+      <div className="max-w-[882px] mx-auto">
+
         {error && <ErrorBanner message={error} />}
         <DragAndDropUploader onFiles={handleFiles} uploading={uploading} />
-        <h2 className="text-xl font-semibold mb-3">Your images</h2>
-        <ImageList items={items} onDelete={handleDelete} />
+        <YourImagesRow items={items} onDelete={handleDelete} />
       </div>
     </div>
   );

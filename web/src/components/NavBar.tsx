@@ -1,21 +1,27 @@
 import React from 'react';
-
+import SvgImage from '../assets/uplane-logo.svg'; // Replace with the actual path to your PNG
+import PngImage from '../assets/uplane-imagotype.png'; // Replace with the actual path to your SVG
 
 export default function NavBar() {
-    return(
-        <header className="px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+  return (
+    <header className="px-20 pt-10">
+      <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded bg-blue-600" />
-            <span className="font-semibold">Uplane</span>
+            <a href="https://uplane.com/" className="flex items-center gap-2">
+            <img src={PngImage} alt="PNG Logo" className="h-14" />
+            <img src={SvgImage} alt="SVG Logo" className="h-8" />
+            </a>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-sm text-gray-700">
+                    <div className="hidden md:flex items-left gap-6 text-sm text-gray-700">
+            <span><a href="https://www.linkedin.com/in/pau-marro/" className="hover:underline">Company</a></span>
+            <span>Remove Background</span>
+            <span>Editing Services</span>
+            <span><a href="https://www.linkedin.com/in/pau-marro/" className="hover:underline">About Me</a></span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 text-sm rounded border border-black/10 bg-white hover:bg-gray-50">Log in</button>
-            <button className="px-3 py-1.5 text-sm rounded bg-black text-white hover:bg-gray-800">Sign up</button>
+            <a className="bg-transparent text-gray-700 rounded-full border border-gray-300 px-7 py-3 text-base font-semibold transition-all duration-200 hover:bg-gray-500/10" href="https://app.uplane.com">Log in</a>
           </div>
-        </div>
-      </header>
-    )
+      </div>
+    </header>
+  );
 }
