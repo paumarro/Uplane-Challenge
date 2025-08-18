@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { uploadImage, listImages, deleteImage } from './api';
 import DragAndDropUploader from './components/DragAndDropUploader';
-import ImageList from './components/ImageList';
 import ErrorBanner from './components/ErrorBanner';
 import NavBar from './components/NavBar';
 import { YourImagesRow } from './components/ImagesRow';
@@ -50,7 +49,6 @@ export default function App() {
       <NavBar />
       <div className="max-w-[882px] mx-auto">
 
-        {error && <ErrorBanner message={error} />}
         <DragAndDropUploader onFiles={handleFiles} uploading={uploading} />
         <YourImagesRow items={items} onDelete={handleDelete} />
       </div>
