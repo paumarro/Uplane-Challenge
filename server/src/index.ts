@@ -1,3 +1,5 @@
+import type { Request, Response } from "express";
+
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -10,6 +12,7 @@ import sharp from "sharp";
 const prisma = new PrismaClient();
 const app = express();
 const upload = multer({ limits: { fileSize: 20 * 1024 * 1024 } });
+
 const port = Number(process.env.PORT || 8080);
 const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 const presignExpires = Number(process.env.PRESIGNED_URL_EXPIRES || 604800);
@@ -21,21 +24,26 @@ async function processImage(fileBuffer: Buffer, originalKey: string, processedKe
   // Upload original (normalize to PNG)
   const normalized = await sharp(fileBuffer).png().toBuffer();
   await putObject(originalKey, normalized, "image/png");
+
   // Background removal via provider
   const bgRemoved = await removeBackground(normalized);
+
   // Horizontal flip (mirror)
   const flipped = await sharp(bgRemoved).flop().png().toBuffer();
+
   // Upload processed
   await putObject(processedKey, flipped, "image/png");
 }
 
-app.post("/api/images", upload.single("image"), async (req, res) => {
+app.post("/api/images", upload.single("image"), async (req: Request, res: Response) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     const mime = req.file.mimetype || "";
     if (!mime.startsWith("image/")) return res.status(400).json({ error: "Invalid file type" });
 
-    const rec = await prisma.image.create({ data: { status: ImageStatus.PROCESSING, originalKey: "", processedKey: null } });
+    const rec = await prisma.image.create({
+      data: { status: ImageStatus.PROCESSING, originalKey: "", processedKey: null }
+    });
     const id = rec.id;
     const originalKey = `original/${id}.png`;
     const processedKey = `processed/${id}.png`;
@@ -58,26 +66,28 @@ app.post("/api/images", upload.single("image"), async (req, res) => {
   }
 });
 
-app.get("/api/images", async (_req, res) => {
+app.get("/api/images", async (_req: Request, res: Response) => {
   const items = await prisma.image.findMany({ orderBy: { createdAt: "desc" } });
-  const out = await Promise.all(items.map(async it => ({
-    id: it.id,
-    status: it.status,
-    originalKey: it.originalKey,
-    processedUrl: it.processedKey ? await getPresignedUrl(it.processedKey, presignExpires) : null,
-    createdAt: it.createdAt,
-  })));
+  const out = await Promise.all(
+    items.map(async it => ({
+      id: it.id,
+      status: it.status,
+      originalKey: it.originalKey,
+      processedUrl: it.processedKey ? await getPresignedUrl(it.processedKey, presignExpires) : null,
+      createdAt: it.createdAt
+    }))
+  );
   res.json(out);
 });
 
-app.get("/api/images/:id", async (req, res) => {
+app.get("/api/images/:id", async (req: Request, res: Response) => {
   const it = await prisma.image.findUnique({ where: { id: req.params.id } });
   if (!it) return res.status(404).json({ error: "Not found" });
   const processedUrl = it.processedKey ? await getPresignedUrl(it.processedKey, presignExpires) : null;
   res.json({ id: it.id, status: it.status, processedUrl });
 });
 
-app.delete("/api/images/:id", async (req, res) => {
+app.delete("/api/images/:id", async (req: Request, res: Response) => {
   const it = await prisma.image.findUnique({ where: { id: req.params.id } });
   if (!it) return res.status(404).json({ error: "Not found" });
   try {
@@ -90,7 +100,7 @@ app.delete("/api/images/:id", async (req, res) => {
   res.json({ ok: true });
 });
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
 
 app.listen(port, async () => {
   await ensureBucket();
