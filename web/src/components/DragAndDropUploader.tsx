@@ -30,7 +30,7 @@ export default function DragAndDropUploader({ onFiles, uploading }: Props) {
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
     >
-      <div className="h-[457px] px-8 sm:px-16 md:px-24 py-16 text-center transition-colors">
+      <div className="h-[457px] px-8 sm:px-16 md:px-24 py-8 sm:py-16 text-center transition-colors">
         {dragOver ? (
 
 <div className="h-full flex items-center justify-center">

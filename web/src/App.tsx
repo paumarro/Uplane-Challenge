@@ -48,7 +48,6 @@ export default function App() {
     <div className="px-5 sm:px-10 lg:px-20 min-h-screen bg-[#EBF5FF] text-gray-900">
       <NavBar />
       <div className="max-w-[882px] 2xl:max-w-5xl mx-auto">
-
         <DragAndDropUploader onFiles={handleFiles} uploading={uploading} />
           {error && <ErrorBanner message={error} />}
         <YourImagesRow items={items} onDelete={handleDelete} />
