@@ -90,18 +90,14 @@ app.post("/api/images", upload.single("image"), async (req: Request, res: Respon
 });
 
 app.get("/api/images", async (_req: Request, res: Response) => {
-  const items = await prisma.image.findMany({ orderBy: { createdAt: "desc" } });
-  const out = await Promise.all(
-    items.map(async it => ({
-      id: it.id,
-      status: it.status,
-      originalKey: it.originalKey,
-      processedUrl: it.processedKey ? await getPresignedUrl(it.processedKey, presignExpires) : null,
-      createdAt: it.createdAt
-    }))
-  );
-  res.json(out);
+  try {
+    res.json([]);
+  } catch (e: any) {
+    console.error("GET /api/images error:", e);
+    res.status(500).json({ error: "Failed to list images" });
+  }
 });
+
 
 app.get("/api/images/:id", async (req: Request, res: Response) => {
   const it = await prisma.image.findUnique({ where: { id: req.params.id } });
