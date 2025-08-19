@@ -14,10 +14,31 @@ const app = express();
 const upload = multer({ limits: { fileSize: 20 * 1024 * 1024 } });
 
 const port = Number(process.env.PORT || 8080);
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 const presignExpires = Number(process.env.PRESIGNED_URL_EXPIRES || 604800);
 
-app.use(cors({ origin: corsOrigin }));
+// Build CORS allowlist from env (comma-separated), strip trailing slashes
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map(s => s.trim().replace(/\/+$/, "")); // normalize
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Allow non-browser or same-origin requests with no Origin header
+      if (!origin) return callback(null, true);
+      const normalized = origin.replace(/\/+$/, "");
+      if (allowedOrigins.includes(normalized)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
+// Explicit preflight
+app.options("*", cors());
+
 app.use(express.json());
 
 async function processImage(fileBuffer: Buffer, originalKey: string, processedKey: string) {
