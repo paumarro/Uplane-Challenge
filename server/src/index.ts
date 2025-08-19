@@ -16,27 +16,29 @@ const upload = multer({ limits: { fileSize: 20 * 1024 * 1024 } });
 const port = Number(process.env.PORT || 8080);
 const presignExpires = Number(process.env.PRESIGNED_URL_EXPIRES || 604800);
 
-// Build CORS allowlist from env (comma-separated), strip trailing slashes
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+// Normalize configured origins (comma-separated, trim + no trailing slash)
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
-  .map(s => s.trim().replace(/\/+$/, "")); // normalize
+  .map(s => s.trim())
+  .filter(Boolean)
+  .map(s => s.replace(/\/+$/, "")); // remove trailing slashes
 
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow non-browser or same-origin requests with no Origin header
+      // Allow server-to-server or same-origin requests with no Origin header
       if (!origin) return callback(null, true);
       const normalized = origin.replace(/\/+$/, "");
       if (allowedOrigins.includes(normalized)) return callback(null, true);
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
-    credentials: true,
+    credentials: false, // set true only if you use cookies/auth headers across origins
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
-// Explicit preflight
+// Explicit preflight for all routes
 app.options("*", cors());
 
 app.use(express.json());
