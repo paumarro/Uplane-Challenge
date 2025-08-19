@@ -1,6 +1,6 @@
-# Uplane Background Remover
+# Background Remover
 
-A full-stack web application to remove backgrounds from images, built as a challenge project. Users can upload images, have their backgrounds removed automatically, and download the processed results. The app features a modern UI and a scalable backend.
+A full-stack web application to remove backgrounds from images, built as a challenge project. Users can upload images, have their backgrounds removed automatically, and download the processed results. 
 
 ---
 
