@@ -33,7 +33,7 @@ export function YourImagesRow({
     <section className="mt-12">
       {items.length > 0 && (
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-500">Your Images</h2>
+          <h2 className="text-3xl font-bold text-black">Your Images</h2>
 
           <div className="flex space-x-2">
             <button
