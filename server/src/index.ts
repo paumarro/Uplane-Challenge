@@ -45,22 +45,54 @@ app.use(express.json());
 
 async function processImage(fileBuffer: Buffer, originalKey: string, processedKey: string) {
   // Upload original (normalize to PNG)
-  const normalized = await sharp(fileBuffer).png().toBuffer();
-  await putObject(originalKey, normalized, "image/png");
+  let normalized: Buffer;
+  try {
+    normalized = await sharp(fileBuffer).png().toBuffer();
+  } catch (e) {
+    console.error("sharp normalize error:", e);
+    throw new Error("Failed to normalize image");
+  }
+  try {
+    await putObject(originalKey, normalized, "image/png");
+  } catch (e) {
+    console.error("putObject original error:", e);
+    throw new Error("Failed to upload original");
+  }
 
   // Background removal via provider
-  const bgRemoved = await removeBackground(normalized);
+  let bgRemoved: Buffer;
+  try {
+    bgRemoved = await removeBackground(normalized);
+  } catch (e: any) {
+    console.error("removeBackground error:", e?.response?.data || e?.message || e);
+    throw new Error("Background removal failed");
+  }
 
   // Horizontal flip (mirror)
-  const flipped = await sharp(bgRemoved).flop().png().toBuffer();
+  let flipped: Buffer;
+  try {
+    flipped = await sharp(bgRemoved).flop().png().toBuffer();
+  } catch (e) {
+    console.error("sharp flop error:", e);
+    throw new Error("Failed to flip image");
+  }
 
   // Upload processed
-  await putObject(processedKey, flipped, "image/png");
+  try {
+    await putObject(processedKey, flipped, "image/png");
+  } catch (e) {
+    console.error("putObject processed error:", e);
+    throw new Error("Failed to upload processed");
+  }
 }
+
 
 app.post("/api/images", upload.single("image"), async (req: Request, res: Response) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file) {
+      console.error("No file in request, fields:", Object.keys(req.body));
+      return res.status(400).json({ error: "No file uploaded (expect field 'image')" });
+    }
     const mime = req.file.mimetype || "";
     if (!mime.startsWith("image/")) return res.status(400).json({ error: "Invalid file type" });
 
