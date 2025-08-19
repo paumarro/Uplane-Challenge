@@ -17,7 +17,7 @@ export default function DragAndDropUploader({ onFiles, uploading }: Props) {
 
   return (
     <div
-      className="rounded-3xl mt-12 sm:mt-16 md:mt-20 mb-6 overflow-hidden"
+      className="2xl:py-12 rounded-3xl mt-12 sm:mt-16 md:mt-20 mb-6 overflow-hidden"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -30,16 +30,15 @@ export default function DragAndDropUploader({ onFiles, uploading }: Props) {
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
     >
-      {/* Fixed-size inner container to prevent layout shift */}
       <div className="h-[457px] px-8 sm:px-16 md:px-24 py-16 text-center transition-colors">
         {dragOver ? (
-          // Center "Drop Here" without changing container size
-          <div className="h-full flex items-center justify-center">
+
+<div className="h-full flex items-center justify-center">
             <p className="text-3xl font-bold text-blue-600">Drop Here</p>
           </div>
         ) : (
           <>
-            <h1 className="text-3xl sm:text-5xl text-[44.5px] font-bold tracking-tight mb-3 mt-10 text-black">
+            <h1 className="text-3xl sm:text-5xl leading-[44px] text-[44.5px] font-bold tracking-tight mb-3 mt-10 text-black">
               Background Remover
             </h1>
             <p className="text-gray-700 text-[23px] leading-8 mb-8 font-thin">
