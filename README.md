@@ -1,6 +1,6 @@
 # Background Remover
 
-A full-stack web application to remove backgrounds from images, built as a challenge project. Users can upload images, have their backgrounds removed automatically, and download the processed results. 
+A full-stack web application to remove backgrounds from images, built as a challenge project in under 2 days. Users can upload images, have their backgrounds removed automatically, and download the processed results. 
 
 ---
 
